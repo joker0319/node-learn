@@ -88,11 +88,11 @@ async function handleRequest(req, res) {
     return sendJSON(res, 201, todo)
   }
 
-  // ---------------- DELETE /todos/:id ----------------
+  // ---------------- DELETE/todos ----------------
   if (req.method === 'DELETE' && req.url.startsWith('/todos/')) {
-    // ① 从路径里取出 id：split('/') 切成 ['', 'todos', '2']，取第 3 段
-    const id = Number(req.url.split('/')[2])
-    const index = todos.findIndex((t) => t.id === id) // 找到要删的 todo 在数组里的位置
+    // ① 从路径里取出 id
+    const id = Number(req.url.slice(('/')[2])) // /todos/123 → 123
+    const index = todos.findIndex(todos => todos.id === id) // 找到要删的 todo 在数组里的位置 
     if (index === -1) {
       return sendJSON(res, 404, { error: `找不到 id=${id} 的 todo` })
     }
@@ -101,29 +101,23 @@ async function handleRequest(req, res) {
     return res.end()
   }
 
-  // ---------------- PUT /todos/:id ----------------
+  // ---------------- PUT/todos ----------------
   if (req.method === 'PUT' && req.url.startsWith('/todos/')) {
     // ① 从路径里取出 id
-    const id = Number(req.url.split('/')[2])
-    const todo = todos.find((t) => t.id === id) // 找到要改的 todo，返回对象本身
+    const id = Number(req.url.slice(('/')[2])) // /todos/123 → 123
+    const todo = todos.find(todos => todos.id === id) // 找到要改的 todo 返回对象
     if (!todo) {
       return sendJSON(res, 404, { error: `找不到 id=${id} 的 todo` })
     }
-
+    
     // ② 读请求体并解析 JSON
     const body = await readBody(req)
     let data
-    try {
+    try{
       data = JSON.parse(body)
-    } catch {
-      return sendJSON(res, 400, { error: '请求体不是合法的 JSON' })
+    }catch{
+      return sendJSON(res,400,{error:'请求体不是合法的 JSON'})
     }
-
-    // ③ 校验字段类型：不校验的话发 {} 会把 done 改成 undefined（字段直接从 JSON 里消失）
-    if (typeof data.done !== 'boolean') {
-      return sendJSON(res, 400, { error: 'done 必须是布尔值' })
-    }
-
     todo.done = data.done // 更新 done 字段
     return sendJSON(res, 200, todo)
   }

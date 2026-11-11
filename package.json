@@ -6,8 +6,16 @@
   "type": "commonjs",
   "scripts": {
     "l1": "node --watch lessons/lesson-01/server.js",
-    "l2": "node --watch lessons/lesson-02/server.js"
+    "l2": "node --watch lessons/lesson-02/server.js",
+    "l3": "node --watch lessons/lesson-03/server.js",
+    "l4": "node --watch lessons/lesson-04/server.js"
   },
-  "keywords": ["nodejs", "learning"],
-  "license": "MIT"
+  "keywords": [
+    "nodejs",
+    "learning"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
 }
