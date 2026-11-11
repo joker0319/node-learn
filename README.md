@@ -2,14 +2,16 @@
 
 从零开始学 Node 后端。每课一个文件夹：**代码（带逐行注释）+ NOTES.md（原理讲解 + 作业）**。
 
+仓库地址：https://github.com/joker0319/node-learn
+
 环境：Node v22.22.2
 
 ## 学习路线
 
 | 课 | 主题 | 状态 |
 |----|------|------|
-| 01 | 纯 http 模块手写服务器（路由、请求响应） | ✅ 当前课 |
-| 02 | 原生 http 处理 POST / JSON（完整 TODO 接口） | ✅ 当前课 |
+| 01 | 纯 http 模块手写服务器（路由、请求响应） | ✅ 已完成 |
+| 02 | 原生 http 处理 POST / JSON（完整 TODO 接口） | ✅ 已完成 |
 | 03 | fs 文件系统：数据真正存起来 | 待学 |
 | 04 | Express 重写：路由 + 中间件 | 待学 |
 | 05 | 数据库：SQLite + 增删改查 | 待学 |
@@ -30,7 +32,21 @@ node-learn/
 ├── package.json        # npm run l1 快捷启动
 ├── README.md
 └── lessons/
-    └── lesson-01/
-        ├── server.js   # 本课代码
-        └── NOTES.md    # 本课讲解 + 作业
+    ├── lesson-01/
+    │   ├── server.js   # 本课代码
+    │   └── NOTES.md    # 本课讲解 + 作业
+    └── lesson-02/
+        ├── server.js
+        └── NOTES.md
 ```
+
+## 每学完一课怎么提交
+
+```bash
+git add -A
+git commit -m "第 3 课：fs 持久化"
+git push
+```
+
+或者在 VS Code 左侧「源代码管理」面板：填消息 → 提交 → 同步更改。
+
