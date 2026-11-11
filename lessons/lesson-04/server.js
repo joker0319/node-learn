@@ -46,11 +46,36 @@ app.use(express.json())
 // 这类"每个请求都要做一遍"的事，就是中间件的典型用途（鉴权、限流、CORS 同理）
 app.use((req, res, next) => {
   const start = Date.now()
-  // 'finish' 事件在响应真正发出去之后触发，所以能拿到准确耗时
+
+  // ===== 作业 1：只记录慢请求（> 50ms）=====
+  // 'finish' 事件在响应真正发出去之后触发，此时才能算出准确耗时。
+  // 正常请求（几毫秒）不再刷屏，只有慢的才会被点名——生产环境日志的常见做法。
   res.on('finish', () => {
-    console.log(`${req.method} ${req.url} → ${res.statusCode} (${Date.now() - start}ms)`)
+    const ms = Date.now() - start
+    if (ms > 50) {
+      console.log(`[慢请求] ${req.method} ${req.url} → ${res.statusCode} (${ms}ms)`)
+    }
   })
+
+  // ===== 作业 2：给每个响应加 X-Response-Time 头 =====
+  // 难点：响应头必须在"响应发出之前"设置（一旦开始发送就不能改了），
+  // 但耗时只有"发出那一刻"才能算出来。两个时刻错开了，怎么办？
+  // 解法：包一层 res.end——响应即将发出的瞬间，先算耗时、塞进头里，再真正发送。
+  // （真实的性能监控中间件如 morgan / Server-Timing 就是这么做的）
+  const originalEnd = res.end.bind(res)
+  res.end = (...args) => {
+    res.setHeader('X-Response-Time', `${Date.now() - start}ms`)
+    return originalEnd(...args)
+  }
+
   next() // 关键：不调用 next() 请求就会卡在这里（永远不返回）
+})
+
+// ===== 作业 1 的验证路由：人为制造一个慢请求 =====
+// await 一个 120ms 的定时器，模拟"这个接口有点慢"
+app.get('/slow', async (req, res) => {
+  await new Promise((resolve) => setTimeout(resolve, 120))
+  res.json({ message: '这个响应花了 120ms' })
 })
 
 // ---------- 路由 ----------
@@ -119,6 +144,13 @@ app.use((err, req, res, next) => {
   console.error('服务器内部错误：', err)
   res.status(500).json({ error: '服务器内部错误' })
 })
+
+// ===== 作业 3 实验结论 =====
+// 把 express.json() 挪到路由后面后，POST 请求返回 500：
+//   TypeError: Cannot destructure property 'text' of 'req.body' as it is undefined.
+// 原因：中间件按注册顺序执行，路由跑完时 express.json() 还没轮到，
+// 所以 req.body 从未被解析，一直是 undefined。
+// 结论：读 req.body 的路由之前，必须先注册 express.json()。
 
 // ---------- 启动 ----------
 // app.listen 内部就是 http.createServer(app).listen()，这一点没变
