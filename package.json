@@ -1,0 +1,13 @@
+{
+  "name": "node-learn",
+  "version": "1.0.0",
+  "description": "Node.js 后端学习仓库：每课一个文件夹，代码 + 讲解笔记",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "l1": "node --watch lessons/lesson-01/server.js",
+    "l2": "node --watch lessons/lesson-02/server.js"
+  },
+  "keywords": ["nodejs", "learning"],
+  "license": "MIT"
+}
